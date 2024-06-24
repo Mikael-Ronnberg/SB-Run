@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/OxygenBar.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/progress.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/over.png" type="Texture" id=3]
+
+[node name="Hud" type="CanvasLayer"]
+
+[node name="Score" type="Label" parent="."]
+margin_left = 16.0
+margin_top = 8.0
+margin_right = 65.0
+margin_bottom = 22.0
+text = "SCORE: "
+align = 1
+valign = 1
+
+[node name="Press" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -78.5
+margin_top = -7.0
+margin_right = 78.5
+margin_bottom = 7.0
+text = "PRESS ANY KEY TO START"
+align = 1
+valign = 1
+
+[node name="OxygenLabel" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -192.0
+margin_top = 8.0
+margin_right = -152.0
+margin_bottom = 22.0
+text = "AIR: "
+align = 1
+valign = 1
+
+[node name="OxygenBar" type="TextureProgress" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -144.0
+margin_top = 8.0
+margin_bottom = 22.0
+texture_under = ExtResource( 2 )
+texture_over = ExtResource( 3 )
+texture_progress = ExtResource( 2 )
+tint_under = Color( 0.494118, 0.482353, 0.482353, 1 )
+tint_over = Color( 0.717647, 0.717647, 0.717647, 1 )
+tint_progress = Color( 0.141176, 0.270588, 0.784314, 1 )
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource( 1 )
