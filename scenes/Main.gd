@@ -4,7 +4,7 @@ var stag_bottom_scene = preload("res://scenes/Stag1.tscn")
 var waterplant_scene = preload("res://scenes/WaterPlant.tscn")
 var crab_scene = preload("res://scenes/Crab.tscn")
 
-var obstacles_types := [stag_bottom_scene, waterplant_scene, crab_scene ]
+var obstacles_types := [stag_bottom_scene, waterplant_scene]
 var obstacles : Array = []
 var last_obs = null
 var distance : int
