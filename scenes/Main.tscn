@@ -2,14 +2,14 @@
 
 [ext_resource path="res://scenes/Swimmer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/BG.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/Main.gd" type="Script" id=3]
+[ext_resource path="res://scripts/Main.gd" type="Script" id=3]
 [ext_resource path="res://scenes/Water.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/Hud.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/WaterArea.tscn" type="PackedScene" id=6]
-[ext_resource path="res://scenes/WaterArea.gd" type="Script" id=7]
+[ext_resource path="res://scripts/WaterArea.gd" type="Script" id=7]
 [ext_resource path="res://scenes/Timer.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/GameOver.tscn" type="PackedScene" id=9]
-[ext_resource path="res://scenes/Water.gd" type="Script" id=10]
+[ext_resource path="res://scripts/Water.gd" type="Script" id=10]
 
 [node name="Main" type="Node"]
 script = ExtResource( 3 )

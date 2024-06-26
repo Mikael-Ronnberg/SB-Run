@@ -16,7 +16,6 @@ const SWIMMER_START_POS = Vector2(176, 380)
 const CAM_START_POS = Vector2(516, 300)
 const SLOWED_DOWN : int = -20
 const START_SPEED : int = 5
-const MAX_SPEED_ : int = 25
 const DISTANCE_MODIFIER: int = 10
 
 onready var player_instance = $Swimmer
@@ -24,15 +23,6 @@ onready var oxygen_bar = $Hud/OxygenBar
 onready var oxygen_timer = $OxygenTimer
 onready var score_label = $Hud/Score
 onready var water_area = $WaterArea
-
-# Function to display splash effects
-func display_splash_effect(body, type):
-	if type == "full":
-		print("Full splash effect!")
-		# Code to display full splash sprite
-	elif type == "partial":
-		print("Partial splash effect!")
-		# Code to display partial splash sprite
 
 func _ready():
 	water_area.connect("exited_left_or_bottom", self, "_on_exited_left_or_bottom")
@@ -76,16 +66,16 @@ func new_game():
 
 
 func _process(_delta):
-	
 	if game_running:
 		speed = START_SPEED
-		water_area.check_exit_conditions($Swimmer)
+		water_area.check_water_conditions($Swimmer)
 		generate_obs()
 		show_distance()
 		
 		$Swimmer.position.x += speed
 		$Camera2D.position.x += speed
 		$WaterArea.position.x += speed
+		
 		#Update distance
 		distance += speed
 		
@@ -148,7 +138,6 @@ func hit_obs(body):
 
 func slow_down(body):
 	if body.name == "Swimmer":
-		print("slowed doenw")
 		$Swimmer.position.x += SLOWED_DOWN
 
 func speed_up(body):
@@ -158,25 +147,22 @@ func speed_up(body):
 func show_distance():
 	score_label.text = "SCORE: " + str(distance / DISTANCE_MODIFIER)
 
-func _on_exited_left_or_bottom(body):
-	if body.name == "Swimmer":
-		game_over()
-
-func _on_fully_exited_top(body):
-	if body.name == "Swimmer":
-		display_splash_effect(body, "full")
-
-func _on_partially_exited_top(body):
-	if body.name == "Swimmer":
-		display_splash_effect(body, "partial")
-
-
 func _on_OxygenTimer_timeout():
 	if game_running:
 		if player_instance.in_water:
 			player_instance.change_oxygen(-player_instance.OXYGEN_DECREASE_RATE)
 		else:
 			player_instance.change_oxygen(player_instance.OXYGEN_INCREASE_RATE)
+
+func _on_exited_left_or_bottom(body):
+	if body.name == "Swimmer":
+		game_over()
+
+func _on_fully_exited_top(body):
+	print("fully exited")
+
+func _on_partially_exited_top(body):
+	print("partially exited")
 
 func game_over():
 	get_tree().paused = true
