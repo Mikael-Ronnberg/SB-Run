@@ -1,7 +1,7 @@
 extends Node
 
 var stag_bottom_scene = preload("res://scenes/Stag1.tscn")
-var waterplant_scene = preload("res://scenes/WaterPlant.tscn")
+var waterplant_scene = preload("res://scenes/WaterLilly.tscn")
 var crab_scene = preload("res://scenes/Crab.tscn")
 
 var obstacles_types := [stag_bottom_scene, waterplant_scene ]
@@ -14,7 +14,7 @@ var game_running : bool
 
 const SWIMMER_START_POS = Vector2(176, 380)
 const CAM_START_POS = Vector2(516, 300)
-const SLOWED_DOWN : int = -20
+const SLOWED_DOWN : int = 1
 const START_SPEED : int = 5
 const DISTANCE_MODIFIER: int = 10
 
@@ -26,9 +26,6 @@ onready var water_area = $WaterArea
 
 func _ready():
 	water_area.connect("exited_left_or_bottom", self, "_on_exited_left_or_bottom")
-	water_area.connect("fully_exited_top", self, "_on_fully_exited_top")
-	water_area.connect("partially_exited_top", self, "_on_partially_exited_top")
-	
 	screen_size = get_viewport().size
 	$GameOver/Button.connect("pressed", self, "new_game")
 	new_game()
@@ -119,10 +116,7 @@ func generate_obs():
 
 func add_obs(obs, x, y):
 	obs.position = Vector2(x, y)
-	if obs.name == "WaterPlant":
-		obs.connect("body_entered", self, "slow_down")
-		obs.connect("body_exited", self, "speed_up")
-	else:
+	if obs.name != "WaterLilly":
 		obs.connect("body_entered", self, "hit_obs")
 
 	add_child(obs)
@@ -136,13 +130,6 @@ func hit_obs(body):
 	if body.name == "Swimmer":
 		game_over()
 
-func slow_down(body):
-	if body.name == "Swimmer":
-		$Swimmer.position.x += SLOWED_DOWN
-
-func speed_up(body):
-	if body.name == "Swimmer":
-		$Swimmer.position.x += speed
 
 func show_distance():
 	score_label.text = "SCORE: " + str(distance / DISTANCE_MODIFIER)
@@ -157,12 +144,6 @@ func _on_OxygenTimer_timeout():
 func _on_exited_left_or_bottom(body):
 	if body.name == "Swimmer":
 		game_over()
-
-func _on_fully_exited_top(body):
-	print("fully exited")
-
-func _on_partially_exited_top(body):
-	print("partially exited")
 
 func game_over():
 	get_tree().paused = true

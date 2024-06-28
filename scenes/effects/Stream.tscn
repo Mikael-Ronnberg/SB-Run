@@ -26,5 +26,4 @@ animations = [ {
 scale = Vector2( 4, 3 )
 z_index = 5
 frames = SubResource( 4 )
-frame = 2
 playing = true

@@ -5,6 +5,7 @@ signal oxygen_change
 var velocity = Vector2()
 var in_water = false
 var gravity_enabled = false
+var is_tangled = false
 
 var MAX_OXYGEN = 100
 var oxygen = MAX_OXYGEN
@@ -56,3 +57,4 @@ func change_oxygen(amount: int):
 	elif oxygen < 0:
 		oxygen = 0
 	emit_signal("oxygen_change", oxygen)
+	
