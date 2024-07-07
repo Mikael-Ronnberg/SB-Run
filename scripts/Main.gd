@@ -5,15 +5,22 @@ var stag_bottom_scene = preload("res://scenes/Stag1.tscn")
 var waterplant_scene = preload("res://scenes/WaterLilly.tscn")
 var crab_scene = preload("res://scenes/Crab.tscn")
 
+var ground_scene = preload("res://scenes/GroundAbove.tscn")
+
 var bottle_scene = preload("res://scenes/bottle.tscn")
+var dark_bottle_scene = preload("res://scenes/DarkBottle.tscn")
 var can_scene = preload("res://scenes/Can.tscn")
 
 var obstacles_types := [stag_bottom_scene, waterplant_scene ]
-var litter_types :=[bottle_scene, can_scene]
+var litter_types :=[bottle_scene, can_scene, dark_bottle_scene]
+
 var obstacles : Array = []
 var litter : Array = []
+var ground : Array = []
+
 var last_litter = null
 var last_obs = null
+var last_ground = null
 var distance : int
 var speed : int 
 var screen_size : Vector2
@@ -63,6 +70,11 @@ func new_game():
 		litt.queue_free()
 	litter  = []
 	
+	# Clear ground
+	for gro in ground:
+		gro.queue_free()
+	ground  = []
+	
 	#Reset player
 	player_instance.oxygen = player_instance.MAX_OXYGEN
 	player_instance.change_oxygen(0) 
@@ -85,7 +97,9 @@ func _process(_delta):
 		water_area.check_water_conditions($Swimmer)
 		generate_obs()
 		generate_litter()
+		generate_ground()
 		show_distance()
+	
 		
 		$Swimmer.position.x += speed
 		$Camera2D.position.x += speed
@@ -104,6 +118,9 @@ func _process(_delta):
 		for litt in litter: 
 			if litt.position.x < distance - 280:
 				remove_obj(litt, litter)
+		for gro in ground: 
+			if gro.position.x < distance - 3580:
+				remove_obj(gro, ground)
 	else:
 		if Input.is_action_pressed("ui_accept"):
 			game_running = true
@@ -140,9 +157,23 @@ func generate_litter():
 		var litter_type = litter_types[randi() % litter_types.size()]
 		var litt = litter_type.instance() 
 		var litt_x : float = screen_size.x + distance + 10
-		var litt_y : float = rand_range(80, 450)
+		var litt_y : float
+		if litt != can_scene:
+			litt_y  = rand_range(130, 450)
+		else:
+			litt_y = rand_range(160, 450)
 		add_litter(litt, litt_x, litt_y)
 		last_litter = litt
+
+func generate_ground():
+	if distance > 3000:
+		if ground.empty() or last_ground.position.x < distance - rand_range(9200, 17000):
+			var ground_instance = ground_scene.instance()
+			var ground_x : float = screen_size.x + distance + 10
+			var ground_y : float = -170 
+			add_ground(ground_instance, ground_x, ground_y)
+			last_ground = ground_instance
+			ground_instance.get_node("DeathAbove").connect("body_entered", self, "hit_obs")
 
 func add_obs(obs, x, y):
 	obs.position = Vector2(x, y)
@@ -156,6 +187,11 @@ func add_litter(litt, x, y):
 	add_child(litt)
 	litter.append(litt)
 	litt.connect("body_entered", self, "_on_litter_body_entered", [litt])
+
+func add_ground(grnd, x, y):
+	grnd.position = Vector2(x, y)
+	add_child(grnd)
+	ground.append(grnd)
 
 func _on_litter_body_entered(body, litter_instance):
 	if body.name == "Swimmer":
@@ -173,7 +209,6 @@ func remove_obj(obj, arr):
 func hit_obs(body):
 	if body.name == "Swimmer":
 		game_over()
-
 
 func show_distance():
 	score_label.text = "SCORE: " + str(score)
