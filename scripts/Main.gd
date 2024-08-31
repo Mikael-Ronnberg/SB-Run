@@ -75,9 +75,8 @@ func new_game():
 		gro.queue_free()
 	ground  = []
 	
-	#Reset player
-	player_instance.oxygen = player_instance.MAX_OXYGEN
-	player_instance.change_oxygen(0) 
+	# Reset player
+	player_instance.reset_player()
 	
 	#Reset nodes
 	$Swimmer.position = SWIMMER_START_POS

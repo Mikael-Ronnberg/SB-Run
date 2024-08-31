@@ -6,13 +6,11 @@ var velocity = Vector2()
 var in_water = false
 var gravity_enabled = false
 var is_tangled = false
-
 var oxygen : int
 
 const MAX_OXYGEN = 100
 const OXYGEN_DECREASE_RATE : float = 1.0
 const OXYGEN_INCREASE_RATE : float = 10.0
-
 const GRAVITY : int = 2200
 const SWIM_SPEED : int = -600
 const MOVE_SPEED : int = 18000
@@ -20,8 +18,7 @@ const TANGLED_MOVE_SPEED : int  = 7000
 const TANGLED_SPEED : int = -30
 
 func _ready():
-	in_water = true
-	oxygen = MAX_OXYGEN
+	reset_player()
 	
 func _physics_process(delta):
 	process_movement(delta)
@@ -31,29 +28,34 @@ func _physics_process(delta):
 
 func process_movement(delta):
 	velocity.x = 0
-	if Input.is_action_pressed("ui_right"):
-		if is_tangled:
-			velocity.x += TANGLED_MOVE_SPEED * delta
-		else:
-			velocity.x += MOVE_SPEED * delta
-	if Input.is_action_pressed("ui_left"):
-		velocity.x -= MOVE_SPEED * delta
-	velocity = move_and_slide(velocity, Vector2.UP)
 
-	if in_water:
-		if Input.is_action_pressed("ui_accept"):
-			if is_tangled:
-				velocity.y = TANGLED_SPEED
-			else:
+	if is_tangled:
+		$AnimatedSprite.play("tangled")
+		if Input.is_action_pressed("ui_right"):
+			velocity.x += TANGLED_MOVE_SPEED * delta
+		if Input.is_action_pressed("ui_left"):
+			velocity.x -= TANGLED_MOVE_SPEED * delta
+		velocity.y = 0  
+	else:
+		if Input.is_action_pressed("ui_right"):
+			velocity.x += MOVE_SPEED * delta
+		if Input.is_action_pressed("ui_left"):
+			velocity.x -= MOVE_SPEED * delta
+		if in_water:
+			if Input.is_action_just_pressed("ui_accept"):
 				velocity.y = SWIM_SPEED
-			$AnimatedSprite.play("swim")
-		elif velocity.y > 0:
-			$AnimatedSprite.play("idle")
+				$AnimatedSprite.play("swim")
+				$SwimSound.play()  
+			elif velocity.y > 0:
+				$AnimatedSprite.play("idle")
+
+	velocity = move_and_slide(velocity, Vector2.UP)
 
 func process_gravity(delta):
 	if gravity_enabled:
 		if in_water:
-			velocity.y += GRAVITY * delta * 0.5
+			if not is_tangled:
+				velocity.y += GRAVITY * delta * 0.5
 			change_oxygen(-OXYGEN_DECREASE_RATE * delta)
 			if is_tangled:
 				change_oxygen(-OXYGEN_DECREASE_RATE * (delta + 1))
@@ -72,3 +74,8 @@ func change_oxygen(amount: int):
 		oxygen = 0
 	emit_signal("oxygen_change", oxygen)
 	
+func reset_player():
+	in_water = true
+	oxygen = MAX_OXYGEN
+	is_tangled = false  
+	$AnimatedSprite.play("idle")

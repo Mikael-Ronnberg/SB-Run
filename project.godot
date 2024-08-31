@@ -13,6 +13,10 @@ config_version=4
 config/name="SBRun"
 run/main_scene="res://scenes/Main.tscn"
 
+[display]
+
+window/size/resizable=false
+
 [global]
 
 texture=false
