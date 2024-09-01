@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/SBSwim-theme.mp3-1bbbed5a9b61e084975a28fe9b0dad38.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/SBSwim-theme.mp3"
+dest_files=[ "res://.import/SBSwim-theme.mp3-1bbbed5a9b61e084975a28fe9b0dad38.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

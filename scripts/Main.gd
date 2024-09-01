@@ -83,6 +83,7 @@ func new_game():
 	$Swimmer.velocity = Vector2(0, 0)
 	$Camera2D.position = CAM_START_POS
 	$Camera2D.current = true
+	$AudioStreamPlayer2D.position = CAM_START_POS
 	$Water.position = Vector2(0, 0)
 	$WaterArea.position = Vector2(0, -40)
 	
@@ -103,6 +104,7 @@ func _process(_delta):
 		$Swimmer.position.x += speed
 		$Camera2D.position.x += speed
 		$WaterArea.position.x += speed
+		$AudioStreamPlayer2D.position.x += speed
 		
 		#Update distance
 		distance += speed
@@ -126,8 +128,8 @@ func _process(_delta):
 			$Hud.get_node("Press").hide()
 			$GameOver.hide()
 			player_instance.set_gravity_enabled(true)
-			
-			
+			if not $AudioStreamPlayer2D.is_playing():
+				$AudioStreamPlayer2D.play()
 
 func generate_obs():
 	if obstacles.empty() or last_obs.position.x < distance - rand_range(300, 500):
@@ -195,6 +197,7 @@ func add_ground(grnd, x, y):
 func _on_litter_body_entered(body, litter_instance):
 	if body.name == "Swimmer":
 		pick_litter(litter_instance)
+		body.get_node("PickUpLitter").play()
 
 func pick_litter(litt):
 		score += 1

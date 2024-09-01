@@ -54,6 +54,8 @@ func process_movement(delta):
 func process_gravity(delta):
 	if gravity_enabled:
 		if in_water:
+			if $O2.is_playing():
+				$O2.stop()
 			if not is_tangled:
 				velocity.y += GRAVITY * delta * 0.5
 			change_oxygen(-OXYGEN_DECREASE_RATE * delta)
@@ -62,6 +64,8 @@ func process_gravity(delta):
 		else:
 			velocity.y += GRAVITY * delta
 			change_oxygen(OXYGEN_INCREASE_RATE * delta)
+			if not $O2.is_playing():
+				$O2.play()
 
 func set_gravity_enabled(enabled: bool):
 	gravity_enabled = enabled
