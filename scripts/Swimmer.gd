@@ -57,10 +57,14 @@ func process_gravity(delta):
 			if $O2.is_playing():
 				$O2.stop()
 			if not is_tangled:
+				if $Tangled.is_playing():
+					$Tangled.stop()
 				velocity.y += GRAVITY * delta * 0.5
 			change_oxygen(-OXYGEN_DECREASE_RATE * delta)
 			if is_tangled:
 				change_oxygen(-OXYGEN_DECREASE_RATE * (delta + 1))
+				if not $Tangled.is_playing():
+					$Tangled.play()
 		else:
 			velocity.y += GRAVITY * delta
 			change_oxygen(OXYGEN_INCREASE_RATE * delta)

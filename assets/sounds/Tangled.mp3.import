@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Tangled.mp3-e80ad6a61f7d56d1589a1838ecacbcb3.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/Tangled.mp3"
+dest_files=[ "res://.import/Tangled.mp3-e80ad6a61f7d56d1589a1838ecacbcb3.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

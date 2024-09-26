@@ -30,7 +30,7 @@ var score : int
 const SWIMMER_START_POS = Vector2(176, 380)
 const CAM_START_POS = Vector2(516, 300)
 const SLOWED_DOWN : int = 1
-const START_SPEED : int = 5
+const START_SPEED : int = 600
 const DISTANCE_MODIFIER: int = 10
 
 onready var player_instance = $Swimmer
@@ -38,6 +38,7 @@ onready var oxygen_bar = $Hud/OxygenBar
 onready var oxygen_timer = $OxygenTimer
 onready var score_label = $Hud/Score
 onready var water_area = $WaterArea
+onready var window = JavaScript.get_interface("window")
 
 func _ready():
 	water_area.connect("exited_left_or_bottom", self, "_on_exited_left_or_bottom")
@@ -47,7 +48,7 @@ func _ready():
 	oxygen_bar.set_player(player_instance) 
 	oxygen_timer.connect("timeout", self, "_on_OxygenTimer_timeout")
 	oxygen_timer.wait_time = 0.1 
-	oxygen_timer.start()  
+	oxygen_timer.start()
 	
 func new_game():
 	# Reset variables
@@ -91,36 +92,35 @@ func new_game():
 	$GameOver.hide()
 
 
-func _process(_delta):
+func _process(delta):
 	if game_running:
 		speed = START_SPEED
+		var move_amount = (speed * delta)
+		
 		water_area.check_water_conditions($Swimmer)
 		generate_obs()
 		generate_litter()
 		generate_ground()
 		show_distance()
-	
+
+		$Swimmer.position.x += move_amount
+		$Camera2D.position.x += move_amount
+		$WaterArea.position.x += move_amount
+		$AudioStreamPlayer2D.position.x += move_amount
 		
-		$Swimmer.position.x += speed
-		$Camera2D.position.x += speed
-		$WaterArea.position.x += speed
-		$AudioStreamPlayer2D.position.x += speed
-		
-		#Update distance
-		distance += speed
+		distance = $Camera2D.position.x
 		
 		if $Camera2D.position.x - $Water.position.x > screen_size.x * 1.5:
 			$Water.position.x += screen_size.x 
-			
-	#Clean up objects
-		for obs in obstacles: 
-			if obs.position.x < distance - 280:
+		
+		for obs in obstacles:
+			if obs.position.x < distance - 812:
 				remove_obj(obs, obstacles)
-		for litt in litter: 
-			if litt.position.x < distance - 280:
+		for litt in litter:
+			if litt.position.x < distance - 512:
 				remove_obj(litt, litter)
-		for gro in ground: 
-			if gro.position.x < distance - 3580:
+		for gro in ground:
+			if gro.position.x < distance - 3700:
 				remove_obj(gro, ground)
 	else:
 		if Input.is_action_pressed("ui_accept"):
@@ -132,13 +132,13 @@ func _process(_delta):
 				$AudioStreamPlayer2D.play()
 
 func generate_obs():
-	if obstacles.empty() or last_obs.position.x < distance - rand_range(300, 500):
+	if obstacles.empty() or last_obs.position.x < distance - rand_range(300, 512):
 		var obs_type = obstacles_types[randi() % obstacles_types.size()]
 		var obs 
 		var max_obs = 3
 		for i in range(randi() % max_obs + 1):
 			obs = obs_type.instance()
-			var obs_x : float = screen_size.x + distance + 100 + (i )
+			var obs_x : float = screen_size.x + distance + 270 + (i )
 			var obs_y : float = 490
 			if obs_type == waterplant_scene:
 				obs.get_node("AnimatedSprite").play("default")
@@ -148,16 +148,15 @@ func generate_obs():
 		if (randi() % 2) == 0:
 			obs = crab_scene.instance()
 			obs.get_node("AnimatedSprite").play("default")
-			var obs_x : float = screen_size.x + distance + 100
+			var obs_x : float = screen_size.x + distance + 270
 			var obs_y : float = 150
 			add_obs(obs, obs_x, obs_y)
-			
 
 func generate_litter():
-	if litter.empty() or last_litter.position.x < distance - rand_range(300, 500):
+	if litter.empty() or last_litter.position.x < distance - rand_range(300, 512):
 		var litter_type = litter_types[randi() % litter_types.size()]
 		var litt = litter_type.instance() 
-		var litt_x : float = screen_size.x + distance + 10
+		var litt_x : float = screen_size.x + distance + 350
 		var litt_y : float
 		if litt != can_scene:
 			litt_y  = rand_range(130, 450)
@@ -170,7 +169,7 @@ func generate_ground():
 	if distance > 3000:
 		if ground.empty() or last_ground.position.x < distance - rand_range(9200, 17000):
 			var ground_instance = ground_scene.instance()
-			var ground_x : float = screen_size.x + distance + 10
+			var ground_x : float = screen_size.x + distance + 270
 			var ground_y : float = -170 
 			add_ground(ground_instance, ground_x, ground_y)
 			last_ground = ground_instance
@@ -227,6 +226,9 @@ func _on_exited_left_or_bottom(body):
 		game_over()
 
 func game_over():
+	$Swimmer.get_node("Died").play()
+	if window and window.has_method("sendScore"):
+		window.sendScore(score)
 	get_tree().paused = true
 	game_running = false
 	$GameOver.show()
